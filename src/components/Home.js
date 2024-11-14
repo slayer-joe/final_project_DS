@@ -11,6 +11,25 @@ function Home() {
         setFile(event.target.files[0]);
     };
 
+    const identifySong = async () => {
+        const formData = new FormData();
+        formData.append("file", file);
+    
+        try {
+            const response = await axios.post("http://localhost:5000/identify", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+    
+            const data = response.data;
+            if (data.title && data.artist) {
+                setSongInfo({ title: data.title, artist: data.artist });
+                setLyrics(data.lyrics);
+            }
+        } catch (error) {
+            console.error("Error identifying song:", error);
+        }
+    };
+
     const handleFileUpload = async (event) => {
         event.preventDefault();
         const formData = new FormData();
