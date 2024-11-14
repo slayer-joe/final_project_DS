@@ -15,12 +15,15 @@ function Home() {
         event.preventDefault();
         const formData = new FormData();
         formData.append("file", file);
-
+    
         try {
-            const response = await axios.post("https://example.com/upload", formData, {
-                headers: { "Content-Type": "multipart/form-data" }
+            const response = await axios.post("http://localhost:5000/process", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+                responseType: "blob"
             });
-            setSongUrl(response.data.songUrl);
+    
+            const url = URL.createObjectURL(new Blob([response.data], { type: "audio/wav" }));
+            setSongUrl(url);
         } catch (error) {
             console.error("Error uploading file:", error);
         }
@@ -28,10 +31,10 @@ function Home() {
 
     const fetchLyrics = async () => {
         try {
-            const response = await axios.post("https://api.openai.com/v1/lyrics", {
+            const response = await axios.post("https://tng-openai-eastus2.openai.azure.com/openai/deployments/gpt-4/chat/completions?api-version=2024-06-01", {
                 prompt: "Get lyrics for the song",
             }, {
-                headers: { "Authorization": `Bearer YOUR_OPENAI_API_KEY` }
+                headers: { "Authorization": `Bearer f79a3d8e7b7d42c6aee107040bf27c9f` }
             });
             setLyrics(response.data.lyrics);
         } catch (error) {
